@@ -1,31 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>音乐盒子</title>
+    <script src="https://cdn.bootcss.com/vue/2.6.10/vue.js"></script>
+    <script src="https://cdn.bootcss.com/axios/0.19.0-beta.1/axios.js"></script>
     <link rel="stylesheet" href="css/index.css">
-    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.js"></script>
-    <script src="js/index.js"></script>
+    <link rel="icon" type="image/png" href="https://s1.music.126.net/style/favicon.ico?v20180823" sizes="32x32">
 </head>
+
 <body>
-    <div class="banner">
-        <div class="content">
-            <img src="images/01.jpg" alt="">
-            <img src="images/02.jpg" alt="">
-            <img src="images/03.jpg" alt="">
-            <img src="images/04.jpg" alt="">
-            <img src="images/05.jpg" alt="">
-        </div>
-        <button class="prev position-center-y"></button>
-        <button class="next position-center-y"></button>
-    <div class="all-icons">
-        <span class="active"></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
+    <canvas id="canvas" ></canvas>
+    <div id="app">
+        <input type="text" v-model="keyword"> <button @click="handleClick">搜索音乐</button>
+        <img src="images/music.jpg" alt="">
+        <h4>{{keyword}}</h4>
+        <audio :src="musicUrl" controls  loop autoplay>
+        </audio>
     </div>
+
+    <script>
+        new Vue({
+            el: "#app",
+            data:{
+                keyword:"",
+                musicUrl:""
+            },
+            methods:{
+                handleClick:async function(){
+                    var url =`https://music.aityp.com/search?keywords=${this.keyword}&limit=1`;
+                    var data = await axios.get(url);
+                    var id = data.data.result.songs[0].id;
+                    console.log(id)
+                    var musicPlayUrl = `https://music.aityp.com/song/url?id=${id}`;
+                    var res = await axios.get(musicPlayUrl);
+                    var musicUrl = res.data.data[0].url;
+                    console.log(musicUrl)
+                    this.musicUrl = musicUrl;
+                }
+            }
+        })
+        </script>
 </body>
+
 </html>
